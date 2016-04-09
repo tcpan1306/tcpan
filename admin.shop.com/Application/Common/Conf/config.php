@@ -17,4 +17,8 @@ return array(
     'DB_NAME' => 'thinkphp',
     'DB_PREFIX' => '',
     'DB_CHARSET' => 'utf8',
+    'SHOW_PAGE_TRACE'=>TRUE,
+    'PAGE_SIZE'=>3,
+    'PAGE_THEME'=>'%HEADER% %FIRST% %UP_PAGE% %LINK_PAGE% %DOWN_PAGE% %END%',
+    'URL_MODEL'=>2,
 );
