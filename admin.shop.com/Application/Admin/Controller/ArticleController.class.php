@@ -75,35 +75,51 @@ class ArticleController extends \Think\Controller {
      * @param int $id
      */
     public function edit($id) {
-     if (IS_POST) {
+        if (IS_POST) {
             if ($this->_model->create() === false) {
                 $this->error(get_error($this->_model->getError()));
             }
-            $rest = $this->_model->add();
+            $rest = $this->_model->save();
 //            dump($rest);exit;
             if ($rest === false) {
                 $this->error(get_error($this->_model->getError()));
             } else {
                 $data = array(
-                    'content' => $content = $_POST['content'],
-                    'article_id' => $rest,
+                    'content' => I(post.content),
+                    'article_id'=>$id,
                 );
-                if (D('ArticleContent')->add($data) === false) {
+                if (D('ArticleContent')->save($data) === false) {
                     $this->error(get_error(D('ArticleContent')->getError()));
                 }
                 $this->success('添加成功', U('index'));
             }
+        } else {
+            //数据的回显
+            $articlecategorys = $this->_model->getCategory();//获得文章分类的内容
+            $this->assign('articlecategorys', $articlecategorys);
+            $ArticleContent = D('ArticleContent')->find($id);//获得文章内容
+            $this->assign('ArticleContent', $ArticleContent);
+            $row = $this->_model->where(array('id' =>$id))->find();
+//            dump($row);
+//           dump( $articlecategorys);exit;
+//            dump($row['article_category_id']);
+//            exit;
+            $this->assign('row', $row);
+            $this->display('edit');
         }
-        
-        
-       //数据的回显
-       $articlecategorys = $this->_model->getCategory();
-       $this->assign('articlecategorys', $articlecategorys);
-       $ArticleContent = D('ArticleContent')->find($id);
-       $this->assign('ArticleContent',$ArticleContent);
-       $row = $this->_model->find(array('id' => $id));
-       $this->assign('row',$row);
-       $this->display('add');
     }
-
+    /**
+     * 移除
+     */
+     public function delete($id){
+        $data = array(
+            'status' => -1,
+            'name'=>array('exp','CONCAT(name,"_del")'),
+        );
+        if($this->_model->where(array('id'=>$id))->setField($data)===false){
+            $this->error(get_error($this->_model->getError()));
+        }  else {
+            $this->success('移除成功',U('index'));    
+        }
+    }
 }

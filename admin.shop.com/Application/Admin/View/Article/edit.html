@@ -22,8 +22,8 @@
                         <!--<input type="text" name='parent_id' value=""/>-->
                         <select name='article_category_id'>
                             <option value='0'>顶级</option>
-                            <foreach name='articlecategorys' item='articlecategory'>
-                                <option value='{$articlecategory.id}'>{$articlecategory.name}</option>
+                           <foreach name='articlecategorys' item='articlecategory'>
+                                <option <if condition='$row["article_category_id"]==$articlecategory["id"]' >selected="selected"</if>  value='{$articlecategory["id"]}'>{$articlecategory.name}</option>
                             </foreach>
                         </select>
                     </td>
