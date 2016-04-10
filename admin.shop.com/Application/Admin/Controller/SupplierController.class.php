@@ -54,11 +54,11 @@ class SupplierController extends \Think\Controller {
         if (IS_POST) {
             //收集数据
             if ($this->_model->create() === false) {
-                $this->error(get_errror($this->_model->getError()));
+                $this->error(get_error($this->_model->getError()));
             }
             //保存数据并判断
             if ($this->_model->add() === false) {
-                $this->error(get_errror($this->_model->getError()));
+                $this->error(get_error($this->_model->getError()));
             } else {
                 $this->success('添加成功', U('index'));
             }
@@ -73,11 +73,11 @@ class SupplierController extends \Think\Controller {
     public function edit($id) {
         if (IS_POST) {
             if ($this->_model->create() === false) {
-                $this->error(get_errror($this->_model->getError()));
+                $this->error(get_error($this->_model->getError()));
             }
             //保存数据
             if($this->_model->save() === false) {
-                $this->error(get_errror($this->_model->getError()));
+                $this->error(get_error($this->_model->getError()));
             }  else {
                 $this->success('修改成功',U('index'));    
             }
@@ -100,7 +100,7 @@ class SupplierController extends \Think\Controller {
         );
         //删除的供应商的名字后添加_del后缀
         if($this->_model->where(array('id'=>$id))->setField($data)===false){
-             $this->error(get_errror($this->_model->getError()));
+             $this->error(get_error($this->_model->getError()));
         }  else {
              $this->success('删除成功');    
         }

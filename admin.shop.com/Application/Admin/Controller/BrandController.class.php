@@ -37,6 +37,22 @@ class BrandController extends \Think\Controller {
      /**
       * 品牌增加 add方法
       */
-     public function add(){}
+     public function add(){
+         //判断数据是否提交
+         if(IS_POST){
+             if($this->_model->create() === false){
+                 $this->error(get_error($this->_model->getError()));
+             }
+             if($this->_model->add() === false){
+                  $this->error(get_error($this->_model->getError()));
+             }  else {
+                 $this->success('添加品牌成功',U('index'));    
+             }
+             
+         }  else {
+         //渲染视图
+         $this->display();
+         }
+     }
 }
 
