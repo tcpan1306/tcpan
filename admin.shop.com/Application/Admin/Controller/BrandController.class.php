@@ -54,5 +54,29 @@ class BrandController extends \Think\Controller {
          $this->display();
          }
      }
+     
+     /**
+      * 品牌的修改
+      */
+     public function edit($id){
+         //判断是否提交数据
+         if(IS_POST){
+             if($this->_model->create() === false){
+                 $this->error(get_error($this->_model->getError()));                 
+             }
+             if($this->_model->save() === false){
+                 $this->error(get_error($this->_model->getError()));
+             }  else {
+                 $this->success('编辑成功',U('index'));    
+             }
+         }  else {
+             //没有的到数据的时候渲染视图 回显原有数据
+         $row = $this->_model->find($id);
+         //传递数据
+         $this->assign("row",$row);
+         //渲染视图
+         $this->display('add');
+         }
+      }
 }
 
