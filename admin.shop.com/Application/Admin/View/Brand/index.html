@@ -16,7 +16,8 @@
                 <!-- 分类 -->
                 
                 <!-- 关键字 -->
-                关键字 <input type="text" name="keyword" size="15" />
+                关键字 <input type="text" name="keyword" size="15" value="{:I('keyword')}" />
+                <input type="hidden" name="p" size="15" value="1"/>
                 <input type="submit" value=" 搜索 " class="button" />
             </form>
         </div>
@@ -46,9 +47,9 @@
                     </foreach>
                     <tr>
                     <td align="right" nowrap="true" colspan="6">
-<!--                        <div class='page'>
+                        <div class='page'>
                           {$page_html}
-                        </div>-->
+                        </div>
                     </td>
                 </tr>
                 </table>

@@ -27,10 +27,18 @@ class BrandController extends \Think\Controller {
      * 品牌的展示  index方法
      */
     public function index() {
-        //获得数据
-     $rows = $this->_model->select();
+        //模糊查询
+        $cond = array();
+        //模糊查询公户上名字
+        $keyword =I('get.keyword');
+        if($keyword){
+            //拼接模糊查询条件
+            $cond['name'] =array('like','%'.$keyword.'%');
+        }
+//        //获得数据
+//     $rows = $this->_model->select();
         //传递数据
-        $this->assign('rows',$rows);
+        $this->assign($this->_model->getPageResult($cond));
         //渲染视图
         $this->display();
     }
@@ -77,6 +85,20 @@ class BrandController extends \Think\Controller {
          //渲染视图
          $this->display('add');
          }
+      }
+      /**
+       * 利用逻辑删除的方法 从页面出移除数据
+       */
+      public function delete($id){
+          $data = array(
+              'status'=>-1,
+              'name' =>array('exp','CONCAT(name,"_del")'),
+          );
+          if($this->_model->where(array('id'=>$id))->setField($data)===false){
+              $this->error(get_error($this->_model->getError()));
+          }  else {
+              $this->success('移除成功',U('index'));  
+          }
       }
 }
 
