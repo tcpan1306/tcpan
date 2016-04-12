@@ -1,56 +1,102 @@
 <extend name='Layout:common'/>
 <block name='main'>
-        <h1>
-            <span class="action-span"><a href="{:U('index')}">供货商管理</a></span>
-            <span class="action-span1"><a href="{:U('Index/main')}">ECSHOP 管理中心</a></span>
-            <span id="search_id" class="action-span1"> - {$meta_title} </span>
-        </h1>
-        <div style="clear:both"></div>
-        <div class="main-div">
-            <form method="post" action="{:U()}" enctype="multipart/form-data" >
-                <table cellspacing="1" cellpadding="3" width="100%">
-                    <tr>
-                        <td class="label">品牌名称</td>
-                        <td>
-                            <input type="text" name="name" maxlength="60" value="{$row.name}" />
-                            <span class="require-field">*</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">品牌描述</td>
-                        <td>
-                            <textarea  name="intro" cols="60" rows="4"  >{$row.intro}</textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">排序</td>
-                        <td>
-                            <input type="text" name="sort" maxlength="40" size="15" value="{$row.sort|default=50}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">是否显示</td>
-                        <td>
-                            <input type="radio" name="status" value="1"/> 是
-                            <input type="radio" name="status" value="0"  /> 否(当品牌下还没有品牌的时候，首页及分类页的品牌区将不会显示该品牌。)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="center"><br />
-                            <input type="hidden" name='id' value="{$row.id}" />
-                            <input type="submit" class="button" value=" 确定 " />
-                            <input type="reset" class="button" value=" 重置 " />
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+    <h1>
+        <span class="action-span"><a href="{:U('index')}">供货商管理</a></span>
+        <span class="action-span1"><a href="{:U('Index/main')}">ECSHOP 管理中心</a></span>
+        <span id="search_id" class="action-span1"> - {$meta_title} </span>
+    </h1>
+    <div class="main-div">
+        <form method="post" action="{:U()}"enctype="multipart/form-data" >
+            <table cellspacing="1" cellpadding="3" width="100%">
+                <tr>
+                    <td class="label">品牌名称</td>
+                    <td>
+                        <input type="text" name="name" maxlength="60" value="{$rows.name}" />
+                        <span class="require-field">*</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">品牌LOGO</td>
+                    <td>
+                <empty name="rows.logo"><img src="" id="logo_preview"/></empty>
+                <notempty name="row.logo">
+                    <br />
+                    <img src="__UPLOAD_URL_PREFIX__/{$row.logo}-thum" id="logo_preview"/>
+                </notempty>
+                <input id='logo' type="file"/>
+                <input name='logo' type="hidden" value="{$row.logo}"/>
+                </td>
+                </tr>
+                <tr>
+                    <td class="label">品牌描述</td>
+                    <td>
+                        <textarea  name="intro" cols="60" rows="4"  >{$rows.intro}</textarea>
+                    </td>
+                </tr>
+                
+<!--                <tr>
+                    <td class="label">所属供货商</td>
+                    <td>
+                        <select name="parent_id">
+                            <foreach name="suppliers" item="supplier">
+                                <if condition='in_array($rows,$supplier["id"])'>selected="selected"</if>
+                                <option value="{$supplier.id}">{$supplier.name}</option>
+                            </foreach>
+                        </select>
+                    </td>
+                </tr>-->
+                <tr>
+                    <td class="label">排序</td>
+                    <td>
+                        <input type="text" name="sort" maxlength="40" size="15" value="{$rows.sort|default=50}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">是否显示</td>
+                    <td>
+                        <input type="radio" name="status" value="1" checked="checked" /> 是
+                        <input type="radio" name="status" value="0"  /> 否(当品牌下还没有商品的时候，首页及分类页的品牌区将不会显示该品牌。)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center"><br />
+                        <input type="hidden" name='id' value="{$rows.id}" />
+                        <input type="submit" class="button" value=" 确定 " />
+                        <input type="reset" class="button" value=" 重置 " />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </block>
 <block name='js'>
     <js href='__JS__/jquery.min.js'/>
+    <js href="__LAYER__/layer.js" />
+    <js href='__UPLOADIFY__/jquery.uploadify.min.js'/>
     <script type='text/javascript'>
-        $(function(){
-            $(':input[name=status]').val([{$row.status|default=1}]);
+        $(function() {
+            $(':input[name=status]').val([{$row.status | default = 1}]);
+            $('#logo').uploadify({
+                'buttonText': '文件上传',
+                'fileObjName': 'file',
+                'swf': '__UPLOADIFY__/uploadify.swf',
+                'uploader': '{:U("Upload/upload")}',
+                'onUploadSuccess': function(file_node, data) {
+//                  data = $.parseJSON(data);
+                    data = eval('(' + data + ')');
+                    if(data.status){
+                        //成功将文件地址保存到隐藏域中
+                        $(':input[name=logo]').val(data.file_url);
+                        $('#logo_preview').attr('src','__UPLOAD_URL_PREFIX__/'+data.file_url+'-thum');
+                    }
+                    console.debug(data);
+                    layer.msg('上传到空间成功', {icon: 6});
+                },
+            });
         });
     </script>
+</block>
+<block name='css'>
+    <css href="__UPLOADIFY__/uploadify.css"/>
+
 </block>

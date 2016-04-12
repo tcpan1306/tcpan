@@ -36,7 +36,10 @@ class BrandModel extends \Think\Model {
         $page_obj = new \Think\Page($count, $size);
         $page_obj->setConfig("theme", C('PAGE_THEME'));
         $page_html = $page_obj->show();
-        $rows = $this->where($cond)->page(I('get.p'), $size)->select();
+        $pageIndex=I('get.p');
+//        dump($pageIndex);exit;
+        $pageIndex=$pageIndex>ceil($count/$size)?ceil($count/$size):$pageIndex;
+        $rows = $this->where($cond)->page($pageIndex, $size)->select();
         return array(
             'rows' => $rows,
             'page_html' => $page_html

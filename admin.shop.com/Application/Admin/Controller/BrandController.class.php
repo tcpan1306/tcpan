@@ -97,7 +97,7 @@ class BrandController extends \Think\Controller {
           if($this->_model->where(array('id'=>$id))->setField($data)===false){
               $this->error(get_error($this->_model->getError()));
           }  else {
-              $this->success('移除成功',U('index'));  
+              $this->success('移除成功');  
           }
       }
 }

@@ -19,7 +19,16 @@ class ArticleModel extends \Think\Model{
         array('name', '', '该分类已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT),
         array('name', 'require', '分类不能为空', self::EXISTS_VALIDATE, '', self::MODEL_INSERT),
     );
-    
+    /**
+     * 自动完成   完成时间入库
+     */
+    protected $_auto = array(
+        array('inputtime',NOW_TIME)
+    );
+
+
+
+
     /**
      * 分页 模糊查询
      * @param array $cond

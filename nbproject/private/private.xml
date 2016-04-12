@@ -3,12 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Controller/SupplierController.class.php</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Model/SupplierModel.class.php</file>
+            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Controller/BrandController.class.php</file>
+            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Brand/add.html</file>
             <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Common/Conf/config.php</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Supplier/index.html</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Layout/common.html</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Supplier/add.html</file>
         </group>
     </open-files>
 </project-private>
