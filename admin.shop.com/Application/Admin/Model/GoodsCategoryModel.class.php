@@ -15,7 +15,7 @@ class GoodsCategoryModel extends \Think\Model{
      * 获取所有的可用分类列表.
      */
     public function getList($file = '*'){
-        return $this->field($field)->where(array('status'=>1))->select();
+        return $this->field($field)->order('lft asc')->where(array('status'=>1))->select();
     }
     public function addCategory(){
         return $this->add();

@@ -11,14 +11,14 @@
                 <tr>
                     <td class="label">品牌名称</td>
                     <td>
-                        <input type="text" name="name" maxlength="60" value="{$rows.name}" />
+                        <input type="text" name="name" maxlength="60" value="{$row.name}" />
                         <span class="require-field">*</span>
                     </td>
                 </tr>
                 <tr>
                     <td class="label">品牌LOGO</td>
                     <td>
-                <empty name="rows.logo"><img src="" id="logo_preview"/></empty>
+                <empty name="row.logo"><img src="" id="logo_preview"/></empty>
                 <notempty name="row.logo">
                     <br />
                     <img src="__UPLOAD_URL_PREFIX__/{$row.logo}-thum" id="logo_preview"/>
@@ -30,25 +30,14 @@
                 <tr>
                     <td class="label">品牌描述</td>
                     <td>
-                        <textarea  name="intro" cols="60" rows="4"  >{$rows.intro}</textarea>
+                        <textarea  name="intro" cols="60" rows="4"  >{$row.intro}</textarea>
                     </td>
                 </tr>
                 
-<!--                <tr>
-                    <td class="label">所属供货商</td>
-                    <td>
-                        <select name="parent_id">
-                            <foreach name="suppliers" item="supplier">
-                                <if condition='in_array($rows,$supplier["id"])'>selected="selected"</if>
-                                <option value="{$supplier.id}">{$supplier.name}</option>
-                            </foreach>
-                        </select>
-                    </td>
-                </tr>-->
                 <tr>
                     <td class="label">排序</td>
                     <td>
-                        <input type="text" name="sort" maxlength="40" size="15" value="{$rows.sort|default=50}" />
+                        <input type="text" name="sort" maxlength="40" size="15" value="{$row.sort|default=50}" />
                     </td>
                 </tr>
                 <tr>
@@ -60,7 +49,7 @@
                 </tr>
                 <tr>
                     <td colspan="2" align="center"><br />
-                        <input type="hidden" name='id' value="{$rows.id}" />
+                        <input type="hidden" name='id' value="{$row.id}" />
                         <input type="submit" class="button" value=" 确定 " />
                         <input type="reset" class="button" value=" 重置 " />
                     </td>
