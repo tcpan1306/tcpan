@@ -37,6 +37,7 @@ class GoodsCategoryController extends \Think\Controller {
     }
 
     public function add() {
+
         if (IS_POST) {
             if ($this->_model->create() === false) {
                 $this->error(get_error($this->_model->getError()));
@@ -45,10 +46,10 @@ class GoodsCategoryController extends \Think\Controller {
             //提示条状
             if ($this->_model->addCategory() === false) {
                 $this->error(get_error($this->_model->getError()));
-            }  else {
-                $this->success('添加成功',U('index'));    
+            } else {
+                $this->success('添加成功', U('index'));
             }
-        }  else {
+        } else {
             $this->_before_view();
             $this->display();
         }
@@ -59,12 +60,36 @@ class GoodsCategoryController extends \Think\Controller {
      * @param type $id
      */
     public function edit($id) {
-        $row = $this->_model->find($id);
-        $this->assign('row', $row);
-        $this->_before_view();
-        $this->display('add');
+        if (IS_POST) {
+            if ($this->_model->create() === false) {
+                $this->error(get_error($this->_model->getError()));
+            }if ($this->_model->updateCategory() === false) {
+                $this->error(get_error($this->_model->getError()));
+            }
+            $this->success('修改成功', U('index'));
+        } else {
+            $row = $this->_model->find($id);
+            $this->assign('row', $row);
+            $this->_before_view();
+            $this->display('add');
+        }
     }
 
+    /**
+     * 删除分类 逻辑删除
+     */
+    public function delete($id){
+        if($this->_model->deleteCategory($id) === false){
+            $this->error(get_error($this->_model->getError()));
+        }
+        $this->success('删除成功',U('index'));
+    }
+
+    
+
+    /**
+     * 准备分类列表用于选择父级分类,ztree插件使用的是json对象,所以传递的是json字符串.
+     */
     private function _before_view() {
         $categories = $this->_model->getList('id,name,parent_id');
         array_unshift($categories, array('id' => 0, 'name' => "顶级分类", 'parent_id' => 0));

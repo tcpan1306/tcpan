@@ -3,7 +3,16 @@
     <css href="__CSS__/page.css"/>
     <css href="__TREEGRID__/css/jquery.treegrid.css"/>
 </block>
+<block name="js">
+    <js href="__JS__/jquery.min.js" />
+    <js href="__TREEGRID__/js/jquery.treegrid.js" />
+    <script type="text/javascript">
+        $(function() {
+            $('.tree').treegrid();
+        });
+    </script> 
 
+</block>
 <block name='main'>
     <h1>
         <span class="action-span"><a href="{:U('add')}">添加商品分类</a></span>
@@ -36,14 +45,4 @@
             </table>
         </div>
     </form>
-</block>
-<block name="js">
-    <js href="__JS__/jquery.min.js" />
-    <js href="__TREEGRID__/js/jquery.treegrid.js" />
-    <script type="text/javascript">
-        $(function() {
-            $('.tree').treegrid();
-        });
-    </script> 
-</script>
 </block>

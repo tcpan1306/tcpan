@@ -23,7 +23,7 @@
         <form method="post" action="{:U()}" enctype="multipart/form-data" >
             <table cellspacing="1" cellpadding="3" width="100%">
                 <tr>
-                    <td class="label">供货商名称</td>
+                    <td class="label">商品名称</td>
                     <td>
                         <input type="text" name="name" maxlength="60" value="{$row.name}" />
                         <span class="require-field">*</span>
@@ -38,7 +38,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="label">供货商描述</td>
+                    <td class="label">商品描述</td>
                     <td>
                         <textarea  name="intro" cols="60" rows="4"  >{$row.intro}</textarea>
                     </td>
@@ -73,31 +73,40 @@
     <script type='text/javascript'>
         //准备配置选项数据
         var setting = {
-            data: {
-                simpleData: {
-                    enable: true,
-                    pIdKey:'parent_id',//告知ztree父级分类标识不是pId而是parent_id
-                }
-            },
-            callback:{
-              onClick:function(event,tree_id,tree_node){
-                  //获得点击节点的名字id 将名字放在input框中,将id放在隐藏域中
-                  $("#parent_id").val(tree_node.id);
-                  $("#parent_name").val(tree_node.name);
-              } , 
-            },
+        data: {
+        simpleData: {
+        enable: true,
+                pIdKey:'parent_id', //告知ztree父级分类标识不是pId而是parent_id
+        }
+        },
+                callback:{
+                onClick:function(event, tree_id, tree_node){
+//                  console.debug(tree_node);
+                //获得点击节点的名字id 将名字放在input框中,将id放在隐藏域中
+                $('#parent_name').val(tree_node.name);
+                        $('#parent_id').val(tree_node.id);
+                },
+                },
         };
-
-        var zNodes = {$categories};
-        
-        $(function () {
-            $(':input[name=status]').val([{$row.status | default = 1}]);
-            var ztree_obj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-            ztree_obj.expandAll(true);
-        });
-
-
-        
+                var zNodes = {$categories};
+                $(function () {
+                $(':input[name=status]').val([{$row.status | default = 1}]);
+                        var ztree_obj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                        ztree_obj.expandAll(true);
+                        //编辑页面回显父级分类
+                        <notempty name = 'row' >
+                        //根据父级节点的id找到ztree中对应的节点
+                        var parent_node = ztree_obj.getNodesByParam("id", {$row.parent_id });
+                        //选中此节点
+                        if (parent_node.length > 0){
+                parent_node = parent_node[0];
+                        ztree_obj.selectNode(parent_node);
+                        //找到父级分类的名字和id方法哦指定的表单控件中
+                        $("#parent_name").val(parent_node.name);
+                        $("#parent_id").val(parent_node.id);
+                }
+                </notempty>
+                });
 
     </script>
 </block>

@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * MySQL DB connection interface
  *
