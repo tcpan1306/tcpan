@@ -38,4 +38,10 @@ class SupplierModel extends \Think\Model {
             'page_html' =>$page_html,
         );
     }
+    /**
+     * 获取所有的可用分类列表.
+     */
+    public function getList($file = '*') {
+        return $this->field($field)->where(array('status' => 1))->select();
+    }
 }

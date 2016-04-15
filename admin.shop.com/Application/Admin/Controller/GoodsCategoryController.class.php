@@ -28,7 +28,7 @@ class GoodsCategoryController extends \Think\Controller {
     }
 
     /**
-     * 列表页面
+     * 列表页面.
      */
     public function index() {
         $rows = $this->_model->getList();
@@ -36,8 +36,11 @@ class GoodsCategoryController extends \Think\Controller {
         $this->display();
     }
 
+    /**
+     * 添加商品.
+     */
     public function add() {
-
+         //判断数据是否提交
         if (IS_POST) {
             if ($this->_model->create() === false) {
                 $this->error(get_error($this->_model->getError()));
@@ -56,36 +59,42 @@ class GoodsCategoryController extends \Think\Controller {
     }
 
     /**
-     * 编辑
+     * 编辑修改方法.
      * @param type $id
      */
     public function edit($id) {
+        //判断是否提交数据
         if (IS_POST) {
+            //收集数据
+            //调用updateCategory的编辑方法
             if ($this->_model->create() === false) {
                 $this->error(get_error($this->_model->getError()));
-            }if ($this->_model->updateCategory() === false) {
+            }
+            if ($this->_model->updateCategory() === false) {
                 $this->error(get_error($this->_model->getError()));
             }
             $this->success('修改成功', U('index'));
         } else {
+            //查找数据
             $row = $this->_model->find($id);
+            //传送数据
             $this->assign('row', $row);
             $this->_before_view();
+            //渲染视图
             $this->display('add');
         }
     }
 
     /**
-     * 删除分类 逻辑删除
+     * 逻辑删除商品
+     * @param int $id
      */
-    public function delete($id){
-        if($this->_model->deleteCategory($id) === false){
+    public function delete($id) {
+        if ($this->_model->deleteCategory($id) === false) {
             $this->error(get_error($this->_model->getError()));
         }
-        $this->success('删除成功',U('index'));
+        $this->success('删除成功', U('index'));
     }
-
-    
 
     /**
      * 准备分类列表用于选择父级分类,ztree插件使用的是json对象,所以传递的是json字符串.

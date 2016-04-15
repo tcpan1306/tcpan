@@ -46,4 +46,10 @@ class BrandModel extends \Think\Model {
         );
     }
 
+    /**
+     * 获取所有的可用分类列表.
+     */
+    public function getList($file = '*') {
+        return $this->field($field)->where(array('status' => 1))->select();
+    }
 }
