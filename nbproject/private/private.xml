@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Goods/add.html</file>
             <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Controller/GoodsController.class.php</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Controller/GoodsGalleryController.class.php</file>
-            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Model/GoodsModel.class.php</file>
+            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/View/Permission/add.html</file>
+            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Controller/PermissionController.class.php</file>
+            <file>file:/C:/server/www/tcpan/admin.shop.com/Application/Admin/Model/PermissionModel.class.php</file>
         </group>
     </open-files>
 </project-private>

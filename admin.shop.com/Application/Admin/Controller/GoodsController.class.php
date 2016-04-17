@@ -119,7 +119,7 @@ class GoodsController extends \Think\Controller {
             if (!$row = $this->_model->getGoodsInfo($id)) {
                  $this->error('请检查商品id',U('index'));
             }
-            $this->_before_view();
+               $this->_before_view();
                 $this->assign('row', $row);
                 $this->display('add');
         }

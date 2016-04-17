@@ -1,0 +1,177 @@
+<extend name='Layout:common'/>
+<block name='main'>
+    <h1>
+        <span class="action-span"><a href="{:U('index')}">管理员管理</a></span>
+        <span class="action-span1"><a href="{:U('Index/main')}">ECSHOP 管理中心</a></span>
+        <span id="search_id" class="action-span1"> - {$meta_title} </span>
+    </h1>
+    <div class="main-div">
+        <form method="post" action="{:U()}" enctype="multipart/form-data" >
+            <table cellspacing="1" cellpadding="3" width="100%">
+                <tr>
+                    <td class="label">管理员名称</td>
+                    <td>
+                  <empty name='row'>
+                        <input type="text" name="username" maxlength="60" value="{$row.username}" />
+                        <span class="require-field">*</span>
+                        <else/>{$row.username}
+                  </empty>
+                    </td>
+                </tr>
+                           <empty name='row'>
+                             <tr>
+                                <td class="label">密码</td>
+                                <td>
+                                    <input type="password" name="password" maxlength="60" value="{$row.password}" />
+                                </td>
+                              </tr>
+                               </empty>
+                            <tr>
+                            <td class="label">邮箱</td>
+                            <td>
+                                <empty name="row">
+                                    <input type="text" name="email" maxlength="60" value="{$row.email}" />
+                                <else/>
+                                    {$row.email}
+                                </empty>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="label">关联角色</td>
+                    <td>
+                      <foreach name="roles" item="role">
+                          <label><input type="checkbox" name="role[]" maxlength="60" value="{$role.id}" <if condition="in_array($role['id'],$row['role_ids'])">checked="checked"</if>/>{$role.name}</label>
+                      </foreach>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">额外权限</td>
+                    <td>
+                        <div id="perms"></div>
+                        <ul id="treeDemo" class="ztree"></ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">管理员描述</td>
+                    <td>
+                        <textarea  name="intro" cols="60" rows="4"  >{$row.intro}</textarea>
+                    </td>
+                </tr>
+
+               
+                <tr>
+                    <td colspan="2" align="center"><br />
+                        <input type="hidden" name='id' value="{$row.id}" />
+                        <input type="submit" class="button" value=" 确定 " />
+                        <input type="reset" class="button" value=" 重置 " />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</block>
+<block name='js'>
+    <js href='__JS__/jquery.min.js'/>
+    <js href='__ZTREE__/js/jquery.ztree.core.min.js'/>
+    <js href='__ZTREE__/js/jquery.ztree.excheck.min.js'/>
+    <js href="__LAYER__/layer.js" />
+    <js href='__UPLOADIFY__/jquery.uploadify.min.js'/>
+    <script type='text/javascript'>
+        $(function() {
+        $(':input[name=status]').val([{$row.status | default = 1}]);
+                $('#logo').uploadify({
+        'buttonText': '文件上传',
+                'fileObjName': 'file',
+                'swf': '__UPLOADIFY__/uploadify.swf',
+                'uploader': '{:U("Upload/upload")}',
+                'onUploadSuccess': function(file_node, data) {
+//                  data = $.parseJSON(data);
+                data = eval('(' + data + ')');
+                        if (data.status){
+                //成功将文件地址保存到隐藏域中
+                $(':input[name=logo]').val(data.file_url);
+                        $('#logo_preview').attr('src', '__UPLOAD_URL_PREFIX__/' + data.file_url + '-thum');
+                }
+                console.debug(data);
+                        layer.msg('上传到空间成功', {icon: 6});
+                },
+        });
+                ////======================性感的分割线用ztree展示权限===============================
+
+                //准备配置选项数据
+                var setting = {
+                check:{enable:true, chkboxType:{ "Y" : "s", "N" : "s" }, },
+                        data: {
+                        simpleData: {
+                        enable: true,
+                                pIdKey:'parent_id', //告知ztree父级分类标识不是pId而是parent_id
+                        }
+                        },
+                        callback:{
+                        onClick:function(event, tree_id, tree_node){
+//                  console.debug(tree_node);
+                        //获得点击节点的名字id 将名字放在input框中,将id放在隐藏域中
+                        $('#parent_name').val(tree_node.name);
+                                $('#parent_id').val(tree_node.id);
+                        },
+                                onCheck:function(){
+                                //获取所有的被选中的选项
+                                var checked_nodes = ztree_obj.getCheckedNodes(true);
+                                        //清除所有隐藏域的值
+                                        perms_node.empty();
+                                        //添加现在的
+                                        $(checked_nodes).each(function(i){
+                                var half_check = this.getCheckStatus();
+                                        if (!half_check.half){
+                                var html = "<input type='hidden' name='perm[]'value='" + this.id + "' />";
+                                        $(html).appendTo(perms_node);
+                                }
+                                });
+                                },
+                        },
+                };
+                var zNodes = {$permissions};
+                var ztree_obj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+                ztree_obj.expandAll(true);
+                var perms_node = $('#perms');
+                //编辑页面回显父级分类
+                //根据父级节点的id找到ztree中对应的节点
+                var parent_node = ztree_obj.getNodesByParam("id", {$row.parent_id | default = 0});
+                //选中此节点
+                if (parent_node.length > 0){
+        parent_node = parent_node[0];
+                ztree_obj.selectNode(parent_node);
+                //找到父级分类的名字和id方法哦指定的表单控件中
+                $("#parent_name").val(parent_node.name);
+                $("#parent_id").val(parent_node.id);
+        }
+        //==================回显关联的权限========================
+        <notempty name = 'row' >
+                var perms = {$row.permission_ids};
+                for (i in perms){
+        var node = ztree_obj.getNodeByParam("id", perms[i]);
+                ztree_obj.checkNode(node, true);
+                var half_check = node.getCheckStatus();
+                if (!half_check.half){
+        var html = "<input type='hidden' name='perm[]' value='" + perms[i] + "' />";
+                $(html).appendTo(perms_node);
+        }
+        }
+        </notempty>
+        });
+    </script>
+</block>
+<block name='css'>
+    <css href="__UPLOADIFY__/uploadify.css"/>
+    <css href="__ZTREE__/css/zTreeStyle/zTreeStyle.css"/>
+    <style type="text/css">
+        ul.ztree{
+            margin-top: 10px;
+            border: 1px solid #617775;
+            background: #f0f6e4;
+            width: 220px;
+            overflow-y: scroll;
+            overflow-x: auto;
+        }
+    </style>
+</block>

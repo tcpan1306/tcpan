@@ -25,7 +25,13 @@ function get_error($errors){
      $html .='</select>';
      return $html;
  }
-
+/**
+ * 一维数组转换成下拉列表.
+ * @param array  $data   一维数组.
+ * @param string $name   表单控件名.
+ * @param string $select 回显选项.
+ * @return string
+ */
  function onearr2select(array $data,$name,$select=''){
      $html ='<select name="'.$name.'">';
      $html .='<option value=""> 请选择...</option>';
@@ -40,4 +46,12 @@ function get_error($errors){
      $html .='</select>';
      return $html;
  }
- 
+ /**
+ * 加盐加密.
+ * @param string $password 原密码.
+ * @param string $salt     盐.
+ * @return string
+ */
+ function salt_password($password,$salt){
+     return md5(md5($password).$salt);
+ }
