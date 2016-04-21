@@ -49,4 +49,19 @@ return array(
             'timeout' => 300, //超时时间
         ), // 上传驱动配置
     ),
+    'CAPTCHA_SETTING'   => [
+        'length' => 4,
+    ],
+    'IGNORE_PATHS'=>[
+           'Admin/Admin/login',
+            'Admin/Captcha/captcha',
+            'Admin/Index/top',
+            'Admin/Index/index',
+            'Admin/Index/menu',
+            'Admin/Index/main',
+            'Admin/Admin/index',
+            'Admin/Admin/add',
+        'Admin/Admin/edit',
+        'Admin/Menu/index',
+    ],
 );

@@ -21,13 +21,25 @@ class AdminModel extends \Think\Model{
         array('password','6,16','密码长度不合法',self::EXISTS_VALIDATE,'length',self::MODEL_INSERT),
         array('email','require','邮箱不能为空',self::EXISTS_VALIDATE,'',self::MODEL_INSERT),
         array('email','email','邮箱不合法',self::EXISTS_VALIDATE,'',self::MODEL_INSERT),
+        //登录验证
+        array('username', 'require', '用户名必填', self::MUST_VALIDATE, '', 'login'),
+        array('password', 'require', '密码必填', self::MUST_VALIDATE, '', 'login'),
+        array('captcha', 'require', '验证码必填', self::MUST_VALIDATE, '', 'login'),
+        array('captcha', 'check_captcha', '验证码不正确', self::MUST_VALIDATE, 'callback', 'login'),
     );
     protected $_auto = array(
         array('salt','\Org\Util\String::randString',self::MODEL_INSERT,'function',6),
         array('salt', '\Org\Util\String::randString', 'reset_pwd', 'function', 6),//当重置密码是自动生成一个盐
         array('add_time',NOW_TIME,self::MODEL_INSERT),
     );
-
+    /**
+     *验证验证码
+     */
+    public function check_captcha($code) {
+        $verify = new \Think\Verify();
+        return $verify->check($code);
+    }
+    
     /**
      * 管理员-角色关联模型.
      * @var \Think\Model 
@@ -198,6 +210,10 @@ class AdminModel extends \Think\Model{
             return false;
         }
     }
+    /**
+     * 重置密码
+     * @return type
+     */
     public function resetPwd(){
         //获取数据
         $password = I('post.password');
@@ -208,5 +224,122 @@ class AdminModel extends \Think\Model{
         }
         $this->data['password']=  salt_password($password, $this->data['salt']);
         return $this->save()?$password:false;
+    }
+    /**
+     * 验证验证码
+     * 验证用户名是否存在
+     * 验证密码是否匹配
+     */
+    public function login(){
+        //为了安全我们将用户信息都删除
+        session('USERINFO',null);
+        $request_data = $this->data;
+       //验证用户是否存在
+        $userinfo = $this->getByUsername($this->data['username']);
+        if(empty($userinfo)){
+            $this->error ='用户不存在';
+            return false;
+        }
+        //验证密码是否匹配
+        $password = salt_password($request_data['password'], $userinfo['salt']);
+        if($password !=$userinfo['password']){
+            $this->error = '密码不正确';
+            return false;
+        }
+        //为了后续回话获取用户信息 我们使用session保存
+        session("USERINFO",$userinfo);
+        $this->_getPermission($userinfo['id']);
+        
+        //保存自动登录信息
+        $this->_saveToken($userinfo['id']);
+        return true;
+    }
+    
+    /**
+     * 判断用户是否需要自动登陆,如果需要就保存令牌到cookie和数据表中. 
+     * $admin_id  管理员id
+     * 
+     */
+   
+    private function _saveToken($admin_id){
+        $token_model = M('AdminToken');
+        //清空原有的令牌
+        cookie('AUTO_LOGIN_TOKEN',null);
+        $token_model->delete($admin_id);
+        //判断是否需要自动登陆
+        $remember = I('post.remember');
+        if($remember){
+            return true;
+        }
+        $data = [
+            'admin_id'=>$admin_id,
+            'token'=>  sha1(mcrypt_create_iv(32)),//随机字符串
+        ];
+        //存到cookie和数据表中
+        cookie('AUTO_LOGIN_TOKEN',$data,604800);
+        return  $token_model->add($data);
+    } 
+ 
+    /**
+     * 检查令牌信息是否匹配
+     */
+    public function autoLogin(){
+        $data = cookie('AUTO_LOGIN_TOKEN');
+        $token_model = M('AdminToken');
+        if(!$token_model->where($data)->count()){
+            return false;
+        }
+        //发现原令牌就应当失效
+        cookie('AUTO_LOGIN_TOKEN',null);
+        $token_model->delete($data['admin_id']);
+        
+        //获取用户信息保存到session中
+        $userinfo = $this->find($data['admin_id']);
+         session("USERINFO",$userinfo);
+         
+         //为了安全 我们把令牌重新生成一次
+         $data = [
+            'admin_id'=>$data['admin_id'],
+            'token'=>  sha1(mcrypt_create_iv(32)),//随机字符串
+        ];
+        //存到cookie和数据表中
+        cookie('AUTO_LOGIN_TOKEN',$data,604800);
+        if($token_model->add($data)===false){
+            return false;
+        }  else {
+            //发现操作都成功就回去用户权限信息
+            $this->_getPermission($data['admin_id']); 
+            return true;
+        }
+    }
+
+        /**
+     * 
+     * @param type $admin_id 用户id.
+     */
+    private function  _getPermission($admin_id ){
+        session('PATHS',NULL);
+        session('PERM_IDS',NULL);
+        /**
+         * SELECT DISTINCT path from admin_permission ap LEFT JOIN permission p ON ap.`permission_id`=p.`id` WHERE admin_id=1 and path<>''
+         * UNION
+         * SELECT DISTINCT path FROM admin_role ar LEFT JOIN role_permission rp on ar.`role_id`=rp.`role_id` LEFT JOIN permission p ON rp.`           * permission_id`=p.id WHERE admin_id=1 and path<>'';
+         */
+        //获取通过角色得到的权限
+        $role_permissions =  $this->distinct(true)->table('__ADMIN_ROLE__ as ar')->join('__ROLE_PERMISSION__ as rp ON ar.`role_id`=rp.`role_id`')->join('__PERMISSION__ as p ON rp.`permission_id`=p.`id`')->where(['admin_id'=>$admin_id ,'path'=>['neq','']])->getField('permission_id,path',true);
+        //获取额外权限
+        $admin_permissions = $this->distinct(true)->table('__ADMIN_PERMISSION__ as ap')->join('__PERMISSION__ as p ON ap.`permission_id` = p.`id`')->where(['admin_id'=>$admin_id ,'path'=>['neq','']])->getField('permission_id,path',true);
+        //由于前面获取的都是关联数组,+合并会自动合并键名相同的元素,也就等同于做了去重
+        $role_permssions=$role_permssions?:[];
+        $admin_permissions=$admin_permissions?:[];
+        $permissions = $role_permissions+$admin_permissions;
+        //获取权限id列表
+        $permission_ids = array_keys($permissions);
+        //获取权限列表
+        $paths = array_values($permissions);
+//        dump($permission_ids);
+//        dump($paths);exit;
+        session('PATHS',$paths);
+        session('PERM_IDS',$permission_ids);
     }
 }
