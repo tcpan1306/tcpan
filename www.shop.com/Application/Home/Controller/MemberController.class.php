@@ -45,9 +45,10 @@ class MemberController extends \Think\Controller {
             $this->display();
         }
     }
+    
     /**
      * 激活邮箱
-     * @param type $email
+     * @param type $email 
      * @param type $token
      */
     public function  active($email,$token){

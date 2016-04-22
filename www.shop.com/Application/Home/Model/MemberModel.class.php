@@ -25,16 +25,15 @@ class MemberModel extends \Think\Model {
         ['email', 'require', '邮箱必填', self::EXISTS_VALIDATE, '', self::MODEL_INSERT],
         ['email', '', '邮箱已经存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT],
         ['email', 'email', '邮箱格式不正确', self::EXISTS_VALIDATE, '', self::MODEL_INSERT],
-//        ['captcha', 'checkPhoneCode', '手机验证码不正确', self::EXISTS_VALIDATE, 'callback', self::MODEL_INSERT],
-//        ['tel', 'require', '手机号码必填', self::EXISTS_VALIDATE, '', self::MODEL_INSERT],
-////        ['tel', '', '手机存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT],
-//        ['tel', 'checkTel', '手机号错误', self::EXISTS_VALIDATE, 'callback', self::MODEL_INSERT],
+        ['captcha', 'checkPhoneCode', '手机验证码不正确', self::EXISTS_VALIDATE, 'callback', self::MODEL_INSERT],
+        ['tel', 'require', '手机号码必填', self::EXISTS_VALIDATE, '', self::MODEL_INSERT],
+        ['tel', '', '手机存在', self::EXISTS_VALIDATE, 'unique', self::MODEL_INSERT],
+        ['tel', 'checkTel', '手机号错误', self::EXISTS_VALIDATE, 'callback', self::MODEL_INSERT],
     ];
 
     public function checkTel($tel) {
         if (preg_match("/^(13|14|15|17|18)\d{9}$/", $tel)) {
             return true;
-            ;
         } else {
             return false;
         }
@@ -74,14 +73,14 @@ class MemberModel extends \Think\Model {
         $request_data = $this->data;
         //保存信息
         $this->data['password'] = $this->salt_password($this->data['password'], $this->data['salt']);
-        if (($member_id= $this->add()) == false) {
+        if (($member_id = $this->add()) == false) {
             return false;
         }
-          $token =\Org\Util\String::randString(40) ;
+        $token = \Org\Util\String::randString(40);
         //发送邮件
-        $url = U('active', ['email' => $request_data['email'], 'token' =>$token],true, true);
+        $url = U('active', ['email' => $request_data['email'], 'token' => $token], true, true);
         //发送邮件
-       
+
         $content = <<<EMAIL
 <h1>注册成功,请激活账号</h1>
 <p style="border:1px dotted blue">请点击<a href='$url'>链接</a>进行激活,如果无法点击,请复制下列地址粘贴到浏览器访问:$url</p>
@@ -94,13 +93,19 @@ EMAIL;
         }
         //保存邮件信息
         $data = [
-            'id'=>$member_id,
-            'token'=>$token,
-            'send_time'=>NOW_TIME,
+            'id' => $member_id,
+            'token' => $token,
+            'send_time' => NOW_TIME,
         ];
-        return  $this->save($data);
+        return $this->save($data);
     }
 
+    /**
+     * 加盐加密.
+     * @param type $password
+     * @param type $salt
+     * @return type
+     */
     public function salt_password($password, $salt) {
         return md5(md5($password) . $salt);
     }
