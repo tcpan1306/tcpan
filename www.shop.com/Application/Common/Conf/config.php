@@ -6,8 +6,7 @@ return array(
         '__CSS__' => DOMAIN . '/Public/css',
         '__JS__' => DOMAIN . '/Public/js',
         '__IMG__' => DOMAIN . '/Public/images',
-        '__JQ_VALIDATION__'=>DOMAIN . '/Public/ext/jquery_validation',
-       
+        '__JQ_VALIDATION__' => DOMAIN . '/Public/ext/jquery_validation',
     ),
     //配置数据库连接
     'DB_TYPE' => 'mysql',
@@ -18,13 +17,19 @@ return array(
     'DB_NAME' => 'thinkphp',
     'DB_PREFIX' => '',
     'DB_CHARSET' => 'utf8',
-    'SHOW_PAGE_TRACE'   => true,
-    'ALIDAYU_SETTING'=>[
-        'ak'=>' 23350860',
-        'sk'=>'ed5c4fb0626b12c672b8052fb9053f1a'
+    'SHOW_PAGE_TRACE' => true,
+    'ALIDAYU_SETTING' => [
+        'ak' => ' 23350860',
+        'sk' => 'ed5c4fb0626b12c672b8052fb9053f1a'
     ],
-    
-    'CAPTCHA_SETTING'   => [
+    'CAPTCHA_SETTING' => [
         'length' => 4,
+    ],
+    'EMAIL_SETTING' => [
+        'host' => 'smtp.163.com',
+        'username' => '13075412875@163.com',
+        'password' => 'tcpan163',
+        'smtpsecure' => 'ssl',
+        'port' => 465,
     ],
 );

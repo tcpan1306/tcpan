@@ -9,8 +9,9 @@ namespace Home\Controller;
  */
 class MemberController extends \Think\Controller {
 
-    /**
-     * 设置标题和初始化模型.
+   /**
+     * 存储模型对象.
+     * @var \Home\Model\MemberModel 
      */
     protected function _initialize() {
         $meta_titles = array(
@@ -36,15 +37,39 @@ class MemberController extends \Think\Controller {
             //2.执行插入
             if($this->_model->addMember() === false){
                 $this->error(get_error($this->_model->getError()));
-            }
-            //3.提示跳转
+            }  else {
+             //3.提示跳转
             $this->success('注册成功',U('login')); 
-        } else {
+            }
+         } else {
             $this->display();
         }
     }
-   
     /**
+     * 激活邮箱
+     * @param type $email
+     * @param type $token
+     */
+    public function  active($email,$token){
+        //1.检测数据表中是否有匹配记录 
+        $cond = [
+            'email'=>$email,
+            'token'=>$token,
+            'send_time'=>['egt',NOW_TIME-86400],//send_time + 86400 > now_time
+        ];
+        //2.有就修改用户状态
+        //3.没错误提示  跳转到用户注册
+        if(!$this->_model->where($cond)->count()){
+            $this->error('验证失败',U('register'));
+        }
+        if($this->_model->where($cond)->setField(['status'=>1,'token'=>'','send_time'=>0])===false){
+            $this->error('激活失败',U('login'));
+        }
+        //4.激活成功删除数据表中的token
+        $this->success('激活成功',U('login'));
+    }
+
+        /**
      * 验证是否唯一
      */
     public function checkUniqueByParams(){
