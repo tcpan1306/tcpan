@@ -11,7 +11,7 @@ class AdminController extends \Think\Controller {
 
     /**
      * 存储模型对象.
-     * @var \Admin\Model\PermissionModel 
+     * @var \Admin\Model\AdminModel 
      */
     private $_model = null;
 
