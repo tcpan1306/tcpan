@@ -58,6 +58,10 @@ class IndexController extends Controller {
         $this->display();
     }
 
+    /**
+     * 商品详情页
+     * @param type $id
+     */
     public function goods($id) {
        //获取商品基本内容和详情还有相册
         $goods_model = D('Goods');
@@ -69,4 +73,22 @@ class IndexController extends Controller {
         $this->display();
     }
 
+    /**
+     * 获取点击次数.
+     * @param type $goods_id
+     */
+    public function getGoodsClickTimes($goods_id){
+        $goods_model = D('Goods');
+//        $click_times=$goods_model->getGoodsClick($goods_id);
+        $click_times = $goods_model->getGoodsClickFromRedis($goods_id);
+        $data =['click_times'=>$click_times];
+        die(json_encode($data));
+    }
+    
+    public function add2Car($goods_id,$amount) {
+        //区分是的是已经登录状态
+        $shopping_car_model = D('ShoppingCar');
+        $shopping_car_model->add2Car($goods_id,$amount);
+        $this->success('添加购物车成功',U('ShoppingCar/flow1'));
+    }
 }
